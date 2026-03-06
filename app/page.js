@@ -133,7 +133,8 @@ export default function Home() {
           </section>
 
           <section id="gallery" style={{ padding: '5rem 5%', background: theme.pale }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.deep, marginBottom: '4rem' }}>活動記録・イベントなど</h2>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.deep, marginBottom: '4rem' }}>活動記録
+              イベントなど</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
               {activities.map((item) => {
                 const isOpen = selectedId === item.id;

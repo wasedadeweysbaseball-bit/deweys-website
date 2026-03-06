@@ -71,7 +71,7 @@ export default function Home() {
       
       <AnimatePresence>
         {isLoading && (
-          <motion.div key="loader" exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: theme.deep, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <motion.div key="loader" exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: theme.deep, display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
             <motion.div animate={{ opacity: [0.3, 1, 0.3], textShadow: [`0 0 5px ${theme.neon}`, `0 0 20px ${theme.neon}`] }} transition={{ duration: 1.5, repeat: Infinity }} style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.neon, letterSpacing: '0.2em' }}>DEWEYS</motion.div>
           </motion.div>
         )}
@@ -94,6 +94,19 @@ export default function Home() {
               <motion.h1 initial="hidden" animate="visible" variants={fadeInUp} style={{ fontSize: 'clamp(2.2rem, 10vw, 4.5rem)', fontWeight: "900", lineHeight: "1.2", letterSpacing: "-0.02em", marginBottom: '1.5rem' }}>
                 野球やろうぜ！<br /><span style={{ color: theme.neon }}>W.DEWEYS</span>
               </motion.h1>
+
+              {/* ★ここに追加したサークル紹介文 */}
+              <motion.div 
+                initial="hidden" 
+                animate="visible" 
+                transition={{ delay: 0.2 }} 
+                variants={fadeInUp} 
+                style={{ fontSize: '0.85rem', lineHeight: '1.8', color: theme.white, opacity: 0.9, marginBottom: '2.5rem', fontWeight: '500', padding: '0 1rem' }}
+              >
+                創立38年目を迎える早稲田大学軟式野球サークルDeweys（デューイズ）です！<br />
+                毎週水曜（土曜）活動中。野球も遊びも全力で！<br />
+                高校野球経験者から未経験者まで男女幅広く所属しています（インカレ歓迎）。
+              </motion.div>
 
               <motion.div initial="hidden" animate="visible" transition={{ delay: 0.3 }} variants={fadeInUp} style={{ display: 'flex', justifyContent: 'space-around', borderTop: `1px solid ${theme.white}33`, paddingTop: '1.5rem', marginTop: '1rem' }}>
                 <div>
@@ -133,8 +146,7 @@ export default function Home() {
           </section>
 
           <section id="gallery" style={{ padding: '5rem 5%', background: theme.pale }}>
-            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.deep, marginBottom: '4rem' }}>活動記録
-              イベントなど</h2>
+            <h2 style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.deep, marginBottom: '4rem' }}>活動記録<br />イベントなど</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
               {activities.map((item) => {
                 const isOpen = selectedId === item.id;
@@ -181,7 +193,6 @@ export default function Home() {
             </div>
           </section>
 
-          {/* ★修正ポイント：フッターにSNSアイコンを追加 */}
           <footer style={{ 
             padding: '4rem 5%', 
             textAlign: 'center', 
@@ -192,7 +203,6 @@ export default function Home() {
             alignItems: 'center', 
             gap: '1.5rem' 
           }}>
-            {/* SNSアイコンエリア */}
             <div style={{ display: 'flex', gap: '2rem' }}>
               <a href="https://www.instagram.com/waseda_deweys" target="_blank" rel="noopener noreferrer" style={{ color: theme.deep, fontSize: '1.5rem' }}>
                 <i className="fab fa-instagram"></i>
@@ -202,7 +212,6 @@ export default function Home() {
               </a>
             </div>
             
-            {/* コピーライト */}
             <div style={{ fontSize: '0.65rem', color: '#999', letterSpacing: '0.2em' }}>
               © 2026 WASEDA DEWEYS
             </div>

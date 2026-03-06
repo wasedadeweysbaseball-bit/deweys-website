@@ -97,18 +97,18 @@ export default function Home() {
 
               <motion.div initial="hidden" animate="visible" transition={{ delay: 0.3 }} variants={fadeInUp} style={{ display: 'flex', justifyContent: 'space-around', borderTop: `1px solid ${theme.white}33`, paddingTop: '1.5rem', marginTop: '1rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>MEMBERS</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.pale }}>{info.memberCount}</div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>部員数</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.pale }}>{info.memberCount}名</div>
                 </div>
                 <div style={{ borderLeft: `1px solid ${theme.white}22` }}></div>
                 <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>BEGINNER</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.neon }}>{info.beginnerRatio}</div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>初心者割合</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.neon }}>{info.beginnerRatio}%</div>
                 </div>
                 <div style={{ borderLeft: `1px solid ${theme.white}22` }}></div>
                 <div>
-                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>UNIV.</div>
-                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.pale }}>{info.universityCount}</div>
+                  <div style={{ fontSize: '0.65rem', opacity: 0.6, marginBottom: '0.3rem' }}>所属大学数</div>
+                  <div style={{ fontSize: '1.1rem', fontWeight: '900', color: theme.pale }}>{info.universityCount}校以上</div>
                 </div>
               </motion.div>
             </div>

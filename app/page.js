@@ -71,7 +71,7 @@ export default function Home() {
       
       <AnimatePresence>
         {isLoading && (
-          <motion.div key="loader" exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: theme.deep, display: 'flex', alignItems: 'center', justifyCenter: 'center' }}>
+          <motion.div key="loader" exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, zIndex: 9999, background: theme.deep, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <motion.div animate={{ opacity: [0.3, 1, 0.3], textShadow: [`0 0 5px ${theme.neon}`, `0 0 20px ${theme.neon}`] }} transition={{ duration: 1.5, repeat: Infinity }} style={{ fontSize: '2.5rem', fontWeight: '900', color: theme.neon, letterSpacing: '0.2em' }}>DEWEYS</motion.div>
           </motion.div>
         )}

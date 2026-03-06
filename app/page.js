@@ -1,38 +1,36 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { client } from "@/lib/microcms";
 
-// microCMSからデータを取得する関数
-async function getDeweysData() {
-  const data = await client.get({
-    endpoint: "deweys", // ここは自分のmicroCMSのエンドポイント名に合わせてね
-  });
-  return data;
-}
+export default function Home() {
+  const [data, setData] = useState(null);
 
-export default async function Home() {
-  const data = await getDeweysData();
+  // クライアントサイドでデータを取得
+  useEffect(() => {
+    const fetchData = async () => {
+      const res = await client.get({
+        endpoint: "deweys", // ここが自分のエンドポイント名と合っているか確認してね
+      });
+      setData(res);
+    };
+    fetchData();
+  }, []);
+
+  if (!data) return <div className="bg-black min-h-screen flex items-center justify-center text-white">Loading...</div>;
 
   return (
     <main className="min-h-screen bg-black text-white">
       {/* --- ヒーローセクション（背景画像エリア） --- */}
       <section className="relative w-full h-[60vh] md:h-screen bg-gray-900">
-        {/* 解説：
-          h-[60vh] -> スマホでは画面の60%の高さに抑えて、横長写真が小さくなりすぎないように調整
-          md:h-screen -> PC（中型画面以上）では画面いっぱいの高さに表示
-        */}
         <Image
           src={data.bg_image.url}
           fill
           priority
           alt="早稲田大学軟式野球サークル W.DEWEYS"
           className="object-contain md:object-cover"
-          /* 解説：
-            object-contain -> スマホで画像全体を収める（端が切れない）
-            md:object-cover -> PCでは画面いっぱいに広げて迫力を出す
-          */
         />
-        
-        {/* 写真の上に重なるオーバーレイ文字 */}
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
           <h1 className="text-4xl md:text-7xl font-bold tracking-tighter drop-shadow-lg">
             W.DEWEYS
@@ -43,34 +41,15 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* --- コンテンツエリア（活動紹介など） --- */}
+      {/* --- コンテンツエリア（活動紹介） --- */}
       <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-4 mb-8">
+        <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-4 mb-8 text-white">
           NEWS / LOGS
         </h2>
         
         <div className="grid gap-8">
-          {/* microCMSのリストを表示するループ処理（例） */}
           {data.activities?.map((item) => (
-            <div key={item.id} className="bg-gray-800 rounded-lg overflow-hidden shadow-xl">
-              {item.image && (
-                <div className="relative h-48 w-full">
-                  <Image
-                    src={item.image.url}
-                    fill
-                    className="object-cover"
-                    alt={item.title}
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                <p className="text-sm text-gray-400 mb-2">{item.date}</p>
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-300 leading-relaxed">
-                  {item.content}
-                </p>
-              </div>
-            </div>
+            <ActivityCard key={item.id} item={item} />
           ))}
         </div>
       </section>
@@ -80,5 +59,52 @@ export default async function Home() {
         <p>&copy; {new Date().getFullYear()} Waseda University W.DEWEYS.</p>
       </footer>
     </main>
+  );
+}
+
+// 各カードの開閉を管理するコンポーネント
+function ActivityCard({ item }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 border border-gray-800">
+      {/* メイン画像 */}
+      {item.image && (
+        <div className="relative h-56 w-full">
+          <Image
+            src={item.image.url}
+            fill
+            className="object-cover"
+            alt={item.title}
+          />
+        </div>
+      )}
+
+      {/* テキストエリア */}
+      <div className="p-6">
+        <div className="flex justify-between items-center">
+          <h3 className="text-xl font-bold">{item.title}</h3>
+          {/* READボタン */}
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="text-xs font-bold border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-black transition-all active:scale-95"
+          >
+            {isOpen ? "CLOSE" : "READ"}
+          </button>
+        </div>
+
+        {/* 開閉する説明文（READを押すと広がる） */}
+        <div 
+          className={`overflow-hidden transition-all duration-500 ease-in-out ${
+            isOpen ? "max-h-[1000px] opacity-100 mt-6" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className="text-gray-300 text-sm md:text-base leading-relaxed border-t border-gray-800 pt-6 whitespace-pre-wrap">
+            {/* whitespace-pre-wrap を入れることで、microCMSでの改行がそのまま反映されるよ */}
+            {item.content}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

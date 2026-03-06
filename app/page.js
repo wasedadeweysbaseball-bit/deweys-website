@@ -7,68 +7,87 @@ import { client } from "@/lib/microcms";
 export default function Home() {
   const [data, setData] = useState(null);
 
-  // クライアントサイドでデータを取得
   useEffect(() => {
     const fetchData = async () => {
       const res = await client.get({
-        endpoint: "deweys", // ここが自分のエンドポイント名と合っているか確認してね
+        endpoint: "deweys", 
       });
       setData(res);
     };
     fetchData();
   }, []);
 
-  if (!data) return <div className="bg-black min-h-screen flex items-center justify-center text-white">Loading...</div>;
+  if (!data) return <div className="bg-black min-h-screen flex items-center justify-center text-white font-bold">LOADING...</div>;
 
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* --- ヒーローセクション（背景画像エリア） --- */}
-      <section className="relative w-full h-[60vh] md:h-screen bg-gray-900">
-        <Image
-          src={data.bg_image.url}
-          fill
-          priority
-          alt="早稲田大学軟式野球サークル W.DEWEYS"
-          className="object-contain md:object-cover"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/20">
-          <h1 className="text-4xl md:text-7xl font-bold tracking-tighter drop-shadow-lg">
-            W.DEWEYS
+      {/* --- ヒーローセクション（写真が絶対に切れない設定） --- */}
+      <section className="relative w-full flex flex-col items-center">
+        {/* 写真部分：スマホでは横幅100%で表示し、高さは写真の比率に合わせる */}
+        <div className="relative w-full aspect-[16/9] md:h-screen">
+          <Image
+            src={data.bg_image.url}
+            fill
+            priority
+            alt="W.DEWEYS 集合写真"
+            className="object-contain md:object-cover"
+            /* 解説：
+               スマホ（object-contain）: 画像が枠に収まるように小さくなる。左右は絶対に切れない。
+               PC（md:object-cover）: 画面いっぱいに広がる。
+            */
+          />
+        </div>
+        
+        {/* 文字コンテンツ：写真の下、または写真に少し重ねて配置 */}
+        <div className="w-full py-10 px-6 flex flex-col items-center text-center bg-gradient-to-b from-black/80 to-black">
+          <h1 className="text-3xl md:text-8xl font-black italic tracking-tighter mb-2">
+            野球やろうぜ！
           </h1>
-          <p className="mt-2 text-sm md:text-xl font-medium tracking-widest">
-            WASEDA UNIVERSITY BASEBALL CLUB
+          <p className="text-2xl md:text-6xl font-bold text-cyan-400 mb-6">
+            W.DEWEYS
           </p>
+          
+          {/* 統計バー：スマホでも見やすく横並びに */}
+          <div className="flex justify-center items-center gap-6 border-y border-white/10 py-4 w-full max-w-md">
+            <div className="text-center">
+              <p className="text-[10px] text-gray-400 uppercase">部員数</p>
+              <p className="text-lg font-bold">35名</p>
+            </div>
+            <div className="text-center border-x border-white/10 px-6">
+              <p className="text-[10px] text-gray-400 uppercase">初心者</p>
+              <p className="text-lg font-bold text-cyan-300">30%</p>
+            </div>
+            <div className="text-center">
+              <p className="text-[10px] text-gray-400 uppercase">大学数</p>
+              <p className="text-lg font-bold">3校+</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* --- コンテンツエリア（活動紹介） --- */}
+      {/* --- 活動紹介セクション --- */}
       <section className="max-w-4xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-bold border-l-4 border-red-600 pl-4 mb-8 text-white">
-          NEWS / LOGS
-        </h2>
+        <h2 className="text-2xl font-black italic mb-8 border-l-4 border-cyan-500 pl-4">NEWS / LOGS</h2>
         
-        <div className="grid gap-8">
+        <div className="grid gap-10">
           {data.activities?.map((item) => (
             <ActivityCard key={item.id} item={item} />
           ))}
         </div>
       </section>
 
-      {/* --- フッター --- */}
-      <footer className="py-10 text-center text-gray-500 text-sm border-t border-gray-800">
-        <p>&copy; {new Date().getFullYear()} Waseda University W.DEWEYS.</p>
+      <footer className="py-10 text-center text-gray-600 text-[10px] tracking-widest uppercase">
+        <p>&copy; {new Date().getFullYear()} WASEDA UNIVERSITY W.DEWEYS.</p>
       </footer>
     </main>
   );
 }
 
-// 各カードの開閉を管理するコンポーネント
 function ActivityCard({ item }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl transition-all duration-300 border border-gray-800">
-      {/* メイン画像 */}
+    <div className="bg-[#111] rounded-xl overflow-hidden border border-white/5">
       {item.image && (
         <div className="relative h-56 w-full">
           <Image
@@ -80,27 +99,23 @@ function ActivityCard({ item }) {
         </div>
       )}
 
-      {/* テキストエリア */}
       <div className="p-6">
         <div className="flex justify-between items-center">
-          <h3 className="text-xl font-bold">{item.title}</h3>
-          {/* READボタン */}
+          <h3 className="text-lg font-bold">{item.title}</h3>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="text-xs font-bold border border-white px-4 py-1.5 rounded-full hover:bg-white hover:text-black transition-all active:scale-95"
+            className="text-[10px] font-bold border border-white px-4 py-1 rounded-full hover:bg-white hover:text-black transition-all"
           >
             {isOpen ? "CLOSE" : "READ"}
           </button>
         </div>
 
-        {/* 開閉する説明文（READを押すと広がる） */}
         <div 
-          className={`overflow-hidden transition-all duration-500 ease-in-out ${
+          className={`overflow-hidden transition-all duration-500 ${
             isOpen ? "max-h-[1000px] opacity-100 mt-6" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="text-gray-300 text-sm md:text-base leading-relaxed border-t border-gray-800 pt-6 whitespace-pre-wrap">
-            {/* whitespace-pre-wrap を入れることで、microCMSでの改行がそのまま反映されるよ */}
+          <div className="text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-6 whitespace-pre-wrap">
             {item.content}
           </div>
         </div>

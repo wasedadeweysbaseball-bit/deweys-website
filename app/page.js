@@ -14,6 +14,7 @@ export default function Home() {
   const [activities, setActivities] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [faqs, setFaqs] = useState([]);
+  const [results, setResults] = useState([]); // ★追加: 試合結果用
   const [info, setInfo] = useState({ memberCount: "---", beginnerRatio: "---", universityCount: "---" });
   const [selectedId, setSelectedId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,16 +22,18 @@ export default function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [act, sch, faq, inf] = await Promise.all([
+        const [act, sch, faq, inf, res] = await Promise.all([
           client.get({ endpoint: "activities" }).catch(() => ({ contents: [] })),
           client.get({ endpoint: "schedules" }).catch(() => ({ contents: [] })),
           client.get({ endpoint: "faq" }).catch(() => ({ contents: [] })),
-          client.get({ endpoint: "info" }).catch(() => ({ contents: [] }))
+          client.get({ endpoint: "info" }).catch(() => ({ contents: [] })),
+          client.get({ endpoint: "results" }).catch(() => ({ contents: [] })) // ★追加: 試合結果取得
         ]);
 
         setActivities(act.contents || []);
         setSchedules(sch.contents || []);
         setFaqs(faq.contents || []);
+        setResults(res.contents || []); // ★追加
 
         if (inf && inf.contents && inf.contents.length > 0) {
           const latestInfo = inf.contents[0];
@@ -95,7 +98,6 @@ export default function Home() {
                 野球やろうぜ！<br /><span style={{ color: theme.neon }}>W.DEWEYS</span>
               </motion.h1>
 
-              {/* ★ここに追加したサークル紹介文 */}
               <motion.div 
                 initial="hidden" 
                 animate="visible" 
@@ -104,7 +106,7 @@ export default function Home() {
                 style={{ fontSize: '0.85rem', lineHeight: '1.8', color: theme.white, opacity: 0.9, marginBottom: '2.5rem', fontWeight: '500', padding: '0 1rem' }}
               >
                 創立38年目を迎える早稲田大学軟式野球サークルDeweys（デューイズ）です！<br />
-                毎週水曜（土曜）活動中。野球も遊びも全力で！<br />
+                毎週水曜（土曜）活動中. 野球も遊びも全力で！<br />
                 高校野球経験者から未経験者まで男女幅広く所属しています（インカレ歓迎）。
               </motion.div>
 
@@ -126,6 +128,33 @@ export default function Home() {
               </motion.div>
             </div>
           </header>
+
+          {/* ★追加: 試合結果（RESULTS）セクション */}
+          <section id="results" style={{ padding: '5rem 5%', background: 'rgba(0, 210, 255, 0.05)' }}>
+            <h2 style={{ fontSize: '0.7rem', fontWeight: '900', letterSpacing: '0.3em', color: theme.neon, marginBottom: '2.5rem' }}>直近の試合結果</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '800px', margin: '0 auto' }}>
+              {results.length > 0 ? results.map((game) => (
+                <div key={game.id} style={{ padding: '2rem', background: 'rgba(255,255,255,0.03)', border: `1px solid ${theme.neon}22`, borderRadius: '15px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '0.7rem', color: theme.neon, fontWeight: '900', marginBottom: '0.5rem' }}>
+                    {new Date(game.date).toLocaleDateString('ja-JP').replace(/\//g, '.')}
+                  </div>
+                    <div style={{ fontSize: '1.4rem', fontWeight: '900' }}>vs {game.opponent}</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '2.5rem', fontWeight: '900', fontStyle: 'italic', color: Number(game.myScore) > Number(game.opScore) ? theme.neon : theme.white }}>{game.myScore} - {game.opScore}</div>
+                      <div style={{ fontSize: '0.6rem', fontWeight: '900', color: Number(game.myScore) > Number(game.opScore) ? theme.neon : theme.red }}>
+                        {Number(game.myScore) > Number(game.opScore) ? "WIN" : Number(game.myScore) < Number(game.opScore) ? "LOSE" : "DRAW"}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div style={{ opacity: 0.5, textAlign: 'center', padding: '2rem' }}>試合結果はまだありません。</div>
+              )}
+            </div>
+          </section>
 
           <section id="schedule" style={{ padding: '5rem 5%' }}>
             <h2 style={{ fontSize: '0.7rem', fontWeight: '900', letterSpacing: '0.3em', color: theme.neon, marginBottom: '2.5rem' }}>SCHEDULE</h2>

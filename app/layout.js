@@ -12,9 +12,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: '早稲田大学軟式野球サークル W.DEWEYS（デューイズ）公式サイト',
-  description: '早稲田大学を中心に活動する軟式野球サークルW.DEWEYS（デューイズ）の公式サイトです。初心者・経験者大歓迎！練習日程や活動記録、入会案内を掲載中。',
-  keywords: '早稲田大学, 野球サークル, 軟式野球, インカレ, デューイズ, DEWEYS',
+  title: '早稲田大学軟式野球サークル W.DEWEYS | 新歓・インカレ・初心者歓迎', // 「新歓」「インカレ」を追加
+  description: '早稲田大学を中心に活動する創立38年の軟式野球サークルW.DEWEYS（デューイズ）公式サイト。2026年度の新入生・マネージャーを募集中！練習日程や試合結果、入会方法を詳しく掲載。',
+  keywords: '早稲田大学, 野球サークル, 軟式野球, インカレ, デューイズ, DEWEYS, 新歓, 大学野球',
   
   // Google Search Consoleの認証コード
   verification: {

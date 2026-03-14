@@ -139,7 +139,7 @@ export default function Home() {
                   <div style={{ fontSize: '0.7rem', color: theme.neon, fontWeight: '900', marginBottom: '0.5rem' }}>
                     {new Date(game.date).toLocaleDateString('ja-JP').replace(/\//g, '.')}
                   </div>
-                    <div style={{ fontSize: '1.4rem', fontWeight: '900' }}>vs {game.opponent}</div>
+                    <div style={{ fontSize: '1rem', fontWeight: '900' }}>vs {game.opponent}</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
                     <div style={{ textAlign: 'center' }}>

@@ -20,6 +20,15 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [calYear, setCalYear] = useState(() => new Date().getFullYear());
+  const [calMonth, setCalMonth] = useState(() => new Date().getMonth());
+  const [selectedDay, setSelectedDay] = useState(null);
+
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") setSelectedActivity(null); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +44,7 @@ export default function Home() {
         setSchedules(sch.contents || []);
         setFaqs(faq.contents || []);
         setResults(res.contents || []);
-        if (inf?.contents?.length > 0) {
+        if (inf && inf.contents && inf.contents.length > 0) {
           const d = inf.contents[0];
           setInfo({
             memberCount: d.memberCount || "---",
@@ -55,10 +64,8 @@ export default function Home() {
   const theme = {
     bg: "#0d1117",
     card: "#161b22",
-    cardAlt: "#1c2333",
     blue: "#3B82F6",
     blueHover: "#60A5FA",
-    blueDim: "#1e3a5f",
     white: "#ffffff",
     muted: "#7d8590",
     border: "#21262d",
@@ -78,8 +85,8 @@ export default function Home() {
     }}>{children}</span>
   );
 
-  const BlueButton = ({ href, children, style = {}, onClick = undefined }) => (
-    <a href={href} onClick={onClick} style={{
+  const BlueButton = ({ href, children, style }) => (
+    <a href={href} style={{
       display: "inline-flex",
       alignItems: "center",
       gap: "10px",
@@ -92,7 +99,7 @@ export default function Home() {
       textDecoration: "none",
       transition: "background 0.2s",
       cursor: "pointer",
-      ...style,
+      ...(style || {}),
     }}
     onMouseEnter={e => e.currentTarget.style.background = theme.blueHover}
     onMouseLeave={e => e.currentTarget.style.background = theme.blue}
@@ -101,9 +108,8 @@ export default function Home() {
       <span style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.25)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem" }}>○</span>
     </a>
   );
-  const OrangeButton = BlueButton;
 
-  const DarkButton = ({ href, children, style = {} }) => (
+  const DarkButton = ({ href, children, style }) => (
     <a href={href} style={{
       display: "inline-flex",
       alignItems: "center",
@@ -116,7 +122,7 @@ export default function Home() {
       fontSize: "0.9rem",
       textDecoration: "none",
       border: `1px solid ${theme.border}`,
-      ...style,
+      ...(style || {}),
     }}>
       {children}
       <span style={{ width: 18, height: 18, borderRadius: "50%", background: "rgba(255,255,255,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.6rem" }}>○</span>
@@ -158,9 +164,9 @@ export default function Home() {
           }}>
             <div style={{ fontWeight: "900", fontSize: "1rem", color: theme.white, letterSpacing: "0.1em" }}>DEWEYS</div>
             <div style={{ display: "flex", gap: "0.6rem", alignItems: "center" }}>
-              <OrangeButton href="https://www.instagram.com/waseda_deweys" style={{ padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
+              <BlueButton href="https://www.instagram.com/waseda_deweys" style={{ padding: "0.5rem 1.2rem", fontSize: "0.8rem" }}>
                 Instagram
-              </OrangeButton>
+              </BlueButton>
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 style={{ width: 38, height: 38, borderRadius: "50%", background: theme.blue, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: theme.white, fontSize: "1rem" }}>
@@ -188,39 +194,27 @@ export default function Home() {
 
           {/* HERO */}
           <section style={{ minHeight: "100vh", position: "relative", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
-            {/* Mosaic background: heavily pixelated via scale trick */}
             <div style={{ position: "absolute", inset: 0, zIndex: 0, overflow: "hidden" }}>
               <Image
                 src="/top.jpg" alt="Hero" fill priority
                 style={{ objectFit: "cover", filter: "brightness(0.4) grayscale(80%) blur(12px)", transform: "scale(1.1)" }}
                 unoptimized
               />
-              {/* Extra pixelate layer: tiny canvas-like grid overlay */}
               <div style={{
                 position: "absolute", inset: 0,
                 background: `repeating-linear-gradient(0deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 6px),
                              repeating-linear-gradient(90deg, rgba(0,0,0,0.08) 0px, rgba(0,0,0,0.08) 1px, transparent 1px, transparent 6px)`,
               }} />
             </div>
-
-            {/* Center content — fixed width, truly centered */}
             <div style={{ position: "relative", zIndex: 1, textAlign: "center", padding: "6rem 2rem 4rem", width: "100%", maxWidth: "680px", margin: "0 auto" }}>
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, delay: 0.1 }}
-                style={{
-                  fontSize: "clamp(3rem, 10vw, 6rem)",
-                  fontWeight: "900",
-                  lineHeight: 1.1,
-                  letterSpacing: "-0.02em",
-                  margin: "0 0 0.3rem",
-                  whiteSpace: "nowrap",
-                }}>
+                style={{ fontSize: "clamp(3rem, 10vw, 6rem)", fontWeight: "900", lineHeight: 1.1, letterSpacing: "-0.02em", margin: "0 0 0.3rem", whiteSpace: "nowrap" }}>
                 野球やろうぜ！<br />
                 <span style={{ color: theme.blue }}>W.DEWEYS</span>
               </motion.h1>
-
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -230,8 +224,6 @@ export default function Home() {
                 毎週水曜（土曜）活動中。野球も遊びも全力で！<br />
                 高校野球経験者から未経験者まで男女幅広く所属しています（インカレ歓迎）。
               </motion.p>
-
-              {/* Stats row */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -260,14 +252,12 @@ export default function Home() {
                 創立38年。早大を中心にインカレ歓迎の軟式野球サークルです。高校球児から人生初グローブまで、全力で楽しんでいます。初心者大歓迎。男女問わず。週2回の活動で、野球の技術も人間関係も全力で成長できます。
               </p>
             </motion.div>
-
-            {/* Stats as a big rounded card */}
             <motion.div
               initial="hidden" whileInView="visible" variants={fadeInUp} viewport={{ once: true }}
               style={{ background: theme.card, borderRadius: "24px", padding: "2.5rem", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1rem", maxWidth: "700px", margin: "0 auto 2.5rem", border: `1px solid ${theme.border}` }}>
               {[
                 { label: "部員数", value: `${info.memberCount}名`, color: theme.white },
-                { label: "初心者割合", value: `${info.beginnerRatio}%`, color: theme.orange },
+                { label: "初心者割合", value: `${info.beginnerRatio}%`, color: theme.blue },
                 { label: "所属大学数", value: `${info.universityCount}校以上`, color: theme.white },
               ].map((s, i) => (
                 <div key={i} style={{ textAlign: "center" }}>
@@ -276,9 +266,8 @@ export default function Home() {
                 </div>
               ))}
             </motion.div>
-
             <div style={{ textAlign: "center" }}>
-              <OrangeButton href="https://lin.ee/srY0QB3">メンバーになる</OrangeButton>
+              <BlueButton href="https://lin.ee/srY0QB3">メンバーになる</BlueButton>
             </div>
           </section>
 
@@ -289,8 +278,6 @@ export default function Home() {
               <h2 style={{ fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: "900", margin: "0.5rem 0 1rem" }}>直近の試合結果</h2>
               <p style={{ color: theme.muted, fontSize: "0.9rem" }}>DEWEYSの最近の活動を紹介します。毎週新しい試合に挑戦中！</p>
             </motion.div>
-
-            {/* Carousel-style: horizontal scroll */}
             <div style={{ display: "flex", gap: "1rem", overflowX: "auto", paddingBottom: "1rem", scrollSnapType: "x mandatory" }}>
               {results.length > 0 ? results.map((game) => {
                 const isWin = Number(game.myScore) > Number(game.opScore);
@@ -318,11 +305,7 @@ export default function Home() {
                     </div>
                     <div style={{ marginTop: "0.8rem" }}>
                       <span style={{
-                        display: "inline-block",
-                        padding: "3px 14px",
-                        borderRadius: "999px",
-                        fontSize: "0.72rem",
-                        fontWeight: "900",
+                        display: "inline-block", padding: "3px 14px", borderRadius: "999px", fontSize: "0.72rem", fontWeight: "900",
                         background: isWin ? `${theme.blue}22` : isDraw ? "#55555522" : "#ef444422",
                         color: isWin ? theme.blue : isDraw ? "#888" : "#ef4444",
                         border: `1px solid ${isWin ? theme.blue : isDraw ? "#555" : "#ef4444"}44`,
@@ -338,7 +321,7 @@ export default function Home() {
             </div>
           </section>
 
-          {/* SCHEDULE */}
+          {/* SCHEDULE CALENDAR */}
           <section id="schedule" style={{ padding: "6rem 5%", background: theme.bg }}>
             <motion.div initial="hidden" whileInView="visible" variants={fadeInUp} viewport={{ once: true }} style={{ textAlign: "center", marginBottom: "3rem" }}>
               <SectionLabel>スケジュール</SectionLabel>
@@ -346,30 +329,168 @@ export default function Home() {
               <p style={{ color: theme.muted, fontSize: "0.9rem" }}>次の活動と試合スケジュール。見学大歓迎！</p>
             </motion.div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "1rem", maxWidth: "1100px", margin: "0 auto" }}>
-              {schedules.map((item, i) => {
-                const badge = getBadgeColor(item.badge);
-                return (
-                  <motion.div
-                    key={item.id}
-                    initial="hidden" whileInView="visible" variants={fadeInUp} viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    style={{ background: theme.card, borderRadius: "16px", padding: "1.5rem", border: `1px solid ${theme.border}` }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.8rem" }}>
-                      <div style={{ fontSize: "0.8rem", color: theme.muted }}>DEWEYS運営</div>
-                      <span style={{ padding: "2px 10px", borderRadius: "999px", fontSize: "0.65rem", fontWeight: "700", background: badge.bg, color: badge.color }}>
-                        {item.badge || "練習"}
-                      </span>
+            {(() => {
+              const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+              const firstDayOfWeek = new Date(calYear, calMonth, 1).getDay();
+              const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+
+              const scheduleMap = {};
+
+              // "M/D" 形式の日付文字列をパースして {month(0-indexed), day} の配列を返す
+              const parseDateTokens = (dateStr) => {
+                const results = [];
+                if (!dateStr) return results;
+
+                // 範囲（〜）を含む場合は開始日と終了日を両方登録
+                // 例: "3/11〜3/12", "3/18 17:00〜19:00"
+                const parts = dateStr.split(/[〜～]/);
+
+                parts.forEach((part, idx) => {
+                  // "3/4 (水)" や "3/18 17:00" など → 最初の M/D だけ取る
+                  const match = part.trim().match(/^(\d{1,2})\/(\d{1,2})/);
+                  if (match) {
+                    const m = parseInt(match[1]) - 1;
+                    const d = parseInt(match[2]);
+                    results.push({ m, d });
+                  } else if (idx > 0) {
+                    // "〜19:00" のように日付がない末尾は無視
+                  }
+                });
+
+                return results;
+              };
+
+              schedules.forEach(item => {
+                const tokens = parseDateTokens(item.date);
+                tokens.forEach(({ m, d }) => {
+                  // 開始〜終了の範囲はすべての日にマップ
+                  const key = `${calYear}-${m}-${d}`;
+                  if (!scheduleMap[key]) scheduleMap[key] = [];
+                  // 重複登録を防ぐ
+                  if (!scheduleMap[key].find(e => e.id === item.id)) {
+                    scheduleMap[key].push(item);
+                  }
+                });
+              });
+
+              const now = new Date();
+              const todayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+              const selectedKey = selectedDay ? `${calYear}-${calMonth}-${selectedDay}` : null;
+              const selectedEvents = selectedKey ? (scheduleMap[selectedKey] || []) : [];
+
+              return (
+                <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
+                    <button
+                      onClick={() => {
+                        setSelectedDay(null);
+                        if (calMonth === 0) { setCalYear(y => y - 1); setCalMonth(11); }
+                        else setCalMonth(m => m - 1);
+                      }}
+                      style={{ width: 36, height: 36, borderRadius: "50%", background: theme.card, border: `1px solid ${theme.border}`, color: theme.white, cursor: "pointer", fontSize: "1rem" }}>‹</button>
+                    <div style={{ fontWeight: "900", fontSize: "1.2rem" }}>{calYear}年 {calMonth + 1}月</div>
+                    <button
+                      onClick={() => {
+                        setSelectedDay(null);
+                        if (calMonth === 11) { setCalYear(y => y + 1); setCalMonth(0); }
+                        else setCalMonth(m => m + 1);
+                      }}
+                      style={{ width: 36, height: 36, borderRadius: "50%", background: theme.card, border: `1px solid ${theme.border}`, color: theme.white, cursor: "pointer", fontSize: "1rem" }}>›</button>
+                  </div>
+
+                  <div style={{ background: theme.card, borderRadius: "20px", border: `1px solid ${theme.border}`, overflow: "hidden" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
+                      {weeks.map((w, i) => (
+                        <div key={w} style={{
+                          textAlign: "center", padding: "0.7rem 0", fontSize: "0.72rem", fontWeight: "700",
+                          color: i === 0 ? "#f87171" : i === 6 ? theme.blue : theme.muted,
+                          borderBottom: `1px solid ${theme.border}`,
+                        }}>{w}</div>
+                      ))}
                     </div>
-                    <div style={{ fontWeight: "900", fontSize: "1.1rem", marginBottom: "0.4rem" }}>{item.date}</div>
-                    <div style={{ fontSize: "0.85rem", color: theme.muted }}>{item.place}</div>
-                    {item.description && (
-                      <div style={{ marginTop: "0.8rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{item.description}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)" }}>
+                      {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+                        <div key={`empty-${i}`} style={{ padding: "0.6rem", borderRight: `1px solid ${theme.border}`, borderBottom: `1px solid ${theme.border}`, minHeight: "60px" }} />
+                      ))}
+                      {Array.from({ length: daysInMonth }).map((_, i) => {
+                        const day = i + 1;
+                        const key = `${calYear}-${calMonth}-${day}`;
+                        const events = scheduleMap[key] || [];
+                        const hasEvent = events.length > 0;
+                        const isToday = key === todayKey;
+                        const isSelected = selectedDay === day;
+                        const colIndex = (firstDayOfWeek + i) % 7;
+                        return (
+                          <div
+                            key={day}
+                            onClick={() => setSelectedDay(isSelected ? null : day)}
+                            style={{
+                              padding: "0.4rem",
+                              borderRight: `1px solid ${theme.border}`,
+                              borderBottom: `1px solid ${theme.border}`,
+                              minHeight: "60px",
+                              cursor: hasEvent ? "pointer" : "default",
+                              background: isSelected ? `${theme.blue}18` : "transparent",
+                              transition: "background 0.15s",
+                            }}>
+                            <div style={{
+                              width: 26, height: 26, borderRadius: "50%",
+                              display: "flex", alignItems: "center", justifyContent: "center",
+                              fontSize: "0.78rem", fontWeight: isToday ? "900" : "500",
+                              background: isToday ? theme.blue : "transparent",
+                              color: isToday ? "#fff" : colIndex === 0 ? "#f87171" : colIndex === 6 ? theme.blue : theme.white,
+                              marginBottom: "0.2rem",
+                            }}>{day}</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+                              {events.slice(0, 2).map((ev, ei) => {
+                                const bc = getBadgeColor(ev.badge);
+                                return (
+                                  <div key={ei} style={{
+                                    fontSize: "0.58rem", fontWeight: "700",
+                                    color: bc.color, background: bc.bg,
+                                    borderRadius: "3px", padding: "1px 4px",
+                                    whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                                  }}>{ev.badge || "練習"}</div>
+                                );
+                              })}
+                              {events.length > 2 && <div style={{ fontSize: "0.55rem", color: theme.muted }}>+{events.length - 2}</div>}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <AnimatePresence>
+                    {selectedDay && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        style={{ marginTop: "1.2rem", display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+                        {selectedEvents.length > 0 ? selectedEvents.map((ev) => {
+                          const bc = getBadgeColor(ev.badge);
+                          return (
+                            <div key={ev.id} style={{ background: theme.card, borderRadius: "14px", border: `1px solid ${theme.border}`, borderLeft: `3px solid ${bc.color}`, padding: "1.2rem 1.4rem" }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                                <span style={{ fontWeight: "900", fontSize: "1rem" }}>{ev.date}</span>
+                                <span style={{ padding: "2px 10px", borderRadius: "999px", fontSize: "0.65rem", fontWeight: "700", background: bc.bg, color: bc.color }}>{ev.badge || "練習"}</span>
+                              </div>
+                              <div style={{ fontSize: "0.85rem", color: theme.muted }}>{ev.place}</div>
+                              {ev.description && <div style={{ marginTop: "0.5rem", fontSize: "0.82rem", color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{ev.description}</div>}
+                            </div>
+                          );
+                        }) : (
+                          <div style={{ background: theme.card, borderRadius: "14px", border: `1px solid ${theme.border}`, padding: "1.2rem", color: theme.muted, fontSize: "0.9rem", textAlign: "center" }}>
+                            {calMonth + 1}月{selectedDay}日の予定はありません
+                          </div>
+                        )}
+                      </motion.div>
                     )}
-                  </motion.div>
-                );
-              })}
-            </div>
+                  </AnimatePresence>
+                </div>
+              );
+            })()}
           </section>
 
           {/* GALLERY */}
@@ -379,27 +500,23 @@ export default function Home() {
               <h2 style={{ fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: "900", margin: "0.5rem 0 1rem" }}>活動の様子</h2>
               <p style={{ color: theme.muted, fontSize: "0.9rem" }}>DEWEYSの日常。練習から試合、イベントまで。あなたもこのコミュニティの一員に。</p>
             </motion.div>
-
             <div style={{ columns: "2", columnGap: "1rem", maxWidth: "1100px", margin: "0 auto" }}>
               {activities.map((item, i) => {
-                const imageUrl = item.icon?.url || item.image?.url || "/no-image.jpg";
+                const imageUrl = (item.icon && item.icon.url) || (item.image && item.image.url) || "/no-image.jpg";
                 return (
                   <motion.div
                     key={item.id}
                     initial="hidden" whileInView="visible" variants={fadeInUp} viewport={{ once: true }}
                     transition={{ delay: i * 0.05 }}
                     onClick={() => setSelectedActivity(item)}
-                    style={{ breakInside: "avoid", marginBottom: "1rem", borderRadius: "16px", overflow: "hidden", position: "relative", background: theme.card, cursor: "pointer" }}>
-                    {/* Image area */}
+                    style={{ breakInside: "avoid", marginBottom: "1rem", borderRadius: "16px", overflow: "hidden", background: theme.card, cursor: "pointer" }}>
                     <div style={{ position: "relative", width: "100%", paddingBottom: "70%", overflow: "hidden" }}>
                       <Image src={imageUrl} alt={item.name} fill style={{ objectFit: "cover", transition: "transform 0.4s ease" }} unoptimized
                         onMouseEnter={e => e.currentTarget.style.transform = "scale(1.04)"}
                         onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
                       />
-                      {/* Arrow badge */}
                       <div style={{ position: "absolute", top: 10, right: 10, width: 30, height: 30, borderRadius: "50%", background: theme.blue, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.7rem", color: theme.white }}>↗</div>
                     </div>
-                    {/* Text area below image */}
                     <div style={{ padding: "0.9rem 1rem 1rem" }}>
                       <div style={{ fontWeight: "900", fontSize: "0.9rem", lineHeight: 1.4, marginBottom: "0.4rem" }}>{item.name}</div>
                       <div style={{ fontSize: "0.68rem", color: theme.blue, fontWeight: "700" }}>タップして詳細を見る →</div>
@@ -428,11 +545,10 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   onClick={e => e.stopPropagation()}
                   style={{ background: theme.card, borderRadius: "20px", border: `1px solid ${theme.border}`, maxWidth: "640px", width: "100%", maxHeight: "85vh", overflowY: "auto", position: "relative" }}>
-                  {/* Modal image */}
-                  {(selectedActivity.icon?.url || selectedActivity.image?.url) && (
+                  {(selectedActivity.icon && selectedActivity.icon.url || selectedActivity.image && selectedActivity.image.url) && (
                     <div style={{ position: "relative", width: "100%", paddingBottom: "50%", borderRadius: "20px 20px 0 0", overflow: "hidden" }}>
                       <Image
-                        src={selectedActivity.icon?.url || selectedActivity.image?.url}
+                        src={(selectedActivity.icon && selectedActivity.icon.url) || (selectedActivity.image && selectedActivity.image.url)}
                         alt={selectedActivity.name}
                         fill
                         style={{ objectFit: "cover" }}
@@ -441,13 +557,11 @@ export default function Home() {
                       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(22,27,34,1) 0%, transparent 60%)" }} />
                     </div>
                   )}
-                  {/* Close button */}
                   <button
                     onClick={() => setSelectedActivity(null)}
                     style={{ position: "absolute", top: 14, right: 14, width: 34, height: 34, borderRadius: "50%", background: "rgba(0,0,0,0.6)", border: `1px solid ${theme.border}`, color: theme.white, cursor: "pointer", fontSize: "1rem", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     ✕
                   </button>
-                  {/* Modal content */}
                   <div style={{ padding: "1.5rem 2rem 2rem" }}>
                     <div style={{ fontSize: "0.7rem", color: theme.blue, fontWeight: "700", marginBottom: "0.4rem", letterSpacing: "0.08em" }}>ACTIVITY</div>
                     <h3 style={{ fontSize: "1.5rem", fontWeight: "900", marginBottom: "0.8rem", lineHeight: 1.3 }}>{selectedActivity.name}</h3>
@@ -473,7 +587,6 @@ export default function Home() {
               <h2 style={{ fontSize: "clamp(1.8rem, 5vw, 3rem)", fontWeight: "900", margin: "0.5rem 0 1rem" }}>よくある質問</h2>
               <p style={{ color: theme.muted, fontSize: "0.9rem" }}>新入生からよく聞かれる質問にお答えします。質問があればLINEで直接聞いてください！</p>
             </motion.div>
-
             <div style={{ maxWidth: "760px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "0.7rem" }}>
               {(faqs.length > 0 ? faqs : [
                 { id: "1", question: "未経験でも入れますか？", answer: "もちろんです！部員の約半数が野球未経験者からスタートしています。" },
@@ -491,12 +604,10 @@ export default function Home() {
                     style={{ width: "100%", background: "none", border: "none", padding: "1.2rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", color: theme.white, textAlign: "left" }}>
                     <span style={{ fontWeight: "700", fontSize: "0.95rem" }}>{item.question}</span>
                     <span style={{
-                      width: 30, height: 30, borderRadius: "50%",
-                      background: theme.blue,
+                      width: 30, height: 30, borderRadius: "50%", background: theme.blue,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: "1.1rem", fontWeight: "300", color: theme.white,
-                      flexShrink: 0, marginLeft: "1rem",
-                      transition: "transform 0.2s",
+                      flexShrink: 0, marginLeft: "1rem", transition: "transform 0.2s",
                       transform: openFaq === item.id ? "rotate(45deg)" : "rotate(0deg)",
                     }}>+</span>
                   </button>

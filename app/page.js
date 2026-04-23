@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import DarkVeil from "./components/DarkVeil";
 import { client } from "../libs/client";
 
 const fadeInUp = {
@@ -316,6 +317,7 @@ export default function Home() {
                 style={{ objectFit: "cover" }}
                 unoptimized
               />
+              <DarkVeil />
               <div className="hero-shade" />
             </div>
 
